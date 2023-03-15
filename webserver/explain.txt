@@ -1,0 +1,96 @@
+std::make_shared是一个C++11提供的模板函数，可以帮助创建一个共享指针。
+它可以接受一个参数或多个参数，分别表示指向的对象的初始值。使用std::make_shared
+可以更简洁地创建共享指针，并且可以更容易地控制共享指针的内存分配。std::make_shared 
+是一个 C++ STL 库中的函数模板，用于创建一个 shared_ptr 智能指针对象。它的语法如下：
+复制
+template<typename T, typename... Args>
+shared_ptr<T> make_shared(Args&&... args);
+其中，T 是智能指针所指向的对象类型，Args 是该对象类型的构造函数的参数列表。
+使用 std::make_shared 的好处是它可以减少内存分配和构造函数调用的开销，因为它可以一次性分配所有内存,
+而不是在创建 shared_ptr 对象和其所指向的对象时都进行内存分配。此外，std::make_shared 还可以避免由于
+内存分配失败导致的内存泄漏问题。
+以下是一个使用 std::make_shared 创建 shared_ptr 对象的示例：
+复制
+#include <iostream>
+#include <memory>
+
+class MyClass {
+public:
+    MyClass(int a, int b) : m_a(a), m_b(b) {
+        std::cout << "MyClass constructor called with a=" << a << ", b=" << b << std::endl;
+    }
+private:
+    int m_a;
+    int m_b;
+};
+
+int main() {
+    auto ptr = std::make_shared<MyClass>(1, 2);
+    return 0;
+}
+在上面的示例中，我们使用 std::make_shared 创建了一个指向 MyClass 对象的 shared_ptr 智能指针。
+
+
+
+std::packaged_task 是 C++11 中的一个模板类，它可以将一个可调用对象（比如函数、函数对象或者 Lambda 
+表达式）与一个 future 关联起来，从而实现异步调用。它将一个异步操作封装成一个可调用对象，并将结果通过
+ future 来传递，可以在多线程环境下使用。
+
+通过 std::packaged_task 可以将一个任务异步化，将任务的计算与任务的执行分离，使得任务可以在另外一个
+线程中执行，从而实现并发执行多个任务，提高程序的效率。
+
+Task pickTask()
+{
+	unique_lock<mutex> lock(mtxQueue);
+	condEmpty.wait(lock,[this](){ return stop||!workQueue.empty(); });
+	if (stop&&workQueue.empty()) return nullptr;
+	auto task = workQueue.front();
+	workQueue.pop();
+	return task;
+}
+void schedule()
+{
+	for (;;){
+		if (auto task = pickTask()){
+			task();
+		}else{
+			printf("thread %lld leaving...\r\n", this_thread::get_id());
+			return;
+		}
+	}
+}
+// 析构函数也需要修改
+~ThreadPool()
+{
+	shutdown();
+	condEmpty.notify_all();
+	for (auto& worker:workers){
+		worker.join();
+	}
+}
+
+
+webbench -c 1000 -t 30 http://43.136.173.233:10000/index.html
+
+// 修改文件描述符
+void modfd(int epollfd, int fd, int ev)
+{
+    epoll_event event;
+    event.data.fd = fd;
+    event.events = ev | EPOLLET | EPOLLRDHUP;
+    epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &event);
+}
+
+// 关闭连接
+void http_conn::close_conn()
+{
+    if (m_sockfd != -1)
+    {
+        removefd(m_epollfd, m_sockfd);
+        m_sockfd = -1;
+        printf("删除客户端的IP地址: %s, 端口: %d\n",
+               inet_ntoa(m_address.sin_addr),
+               ntohs(m_address.sin_port));
+        init();//初始化很关键
+    }
+}
