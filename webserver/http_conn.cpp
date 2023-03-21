@@ -43,9 +43,9 @@ void addfd(int epollfd, int fd, bool one_shot)
     if (!ret)
     {
         http_conn::m_user_count++; // 用户数加1
+        // 设置文件描述符非阻塞
+        setnonblocking(fd);
     }
-    // 设置文件描述符非阻塞
-    setnonblocking(fd);
 }
 // 重置socket上EPOLLONESHOT事件 确保下一次可读时，epollin时间能被触发
 void reset_oneshot(int epollfd, int fd)
@@ -67,11 +67,13 @@ http_conn::~http_conn()
 void removefd(int epollfd, int fd)
 {
     epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, 0);
-    int ret = close(fd);
-    if (!ret)
-    {
-        http_conn::m_user_count--; // 用户数-1
-    }
+    // int ret = 
+    close(fd);
+    // if (!ret)
+    // {
+    //     http_conn::m_user_count--; // 用户数-1
+    // }
+    http_conn::m_user_count--;
     std::cout << "删除用户成功" << std::endl;
 }
 // 线程池处理函数
@@ -123,15 +125,12 @@ void http_conn::init(const int sockfd, const sockaddr_in &addr)
 // 初始化成员
 void http_conn::init()
 {
-    m_check_state = CHECK_STATE_REQUESTLINE;
+
     m_checked_index = 0;
     m_start_line = 0;
     m_read_index = 0;
-    m_method = GET; // 请求方法
-    m_url = NULL;   // 客户请求的目标文件的文件名
-    m_version = NULL;
-    m_host = NULL;
-    m_content_length = 0;
+    m_write_index = 0;
+
     bzero(m_read_buf, READ_BUFFER_SIZE);
     bzero(m_write_buf, READ_BUFFER_SIZE);
     bzero(m_real_file, FILENAME_LEN);
@@ -140,6 +139,14 @@ void http_conn::init()
 
     bytes_to_send = 0;   // 将要发送的数据的字节数
     bytes_have_send = 0; // 已经发送的字节数
+
+    m_check_state = CHECK_STATE_REQUESTLINE;
+    m_linger = false; // 默认不保持链接  Connection : keep-alive保持连接
+    m_method = GET;   // 请求方法
+    m_url = NULL;     // 客户请求的目标文件的文件名
+    m_version = NULL;
+    m_host = NULL;
+    m_content_length = 0;
 }
 // 关闭连接
 void http_conn::close_conn()
@@ -151,7 +158,7 @@ void http_conn::close_conn()
         printf("删除客户端的IP地址: %s, 端口: %d\n",
                inet_ntoa(m_address.sin_addr),
                ntohs(m_address.sin_port));
-        init();//初始化很关键
+        init(); // 初始化很关键
     }
 }
 // 非阻塞读
@@ -270,55 +277,49 @@ http_conn::HTTP_CODE http_conn::process_read()
 http_conn::HTTP_CODE http_conn::prase_request_line(char *text)
 {
     std::cout << "get 1 http line: " << text << std::endl;
-    // GET / HTTP/1.1
-    m_url = strpbrk(text, " \t");
-    *m_url++ = '\0';
-    // GET\0/ HTTP/1.1
+    // GET /index.html HTTP/1.1
+    m_url = strpbrk(text, " \t"); // 判断第二个参数中的字符哪个在text中最先出现
+    if (!m_url)
+    {
+        return BAD_REQUEST;
+    }
+    // GET\0/index.html HTTP/1.1
+    *m_url++ = '\0'; // 置位空字符，字符串结束符
     char *method = text;
     if (strcasecmp(method, "GET") == 0)
-    {
+    { // 忽略大小写比较
         m_method = GET;
     }
     else
     {
         return BAD_REQUEST;
     }
-    // 此时m_url跳过了第一个 空格 或 '\t'，但不知道之后是否还有
-    // 将m_url向后偏移，通过查找继续跳过 空格 和 '\t'，指向请求资源的第一个字符
-    m_url += strspn(m_url, " \t");
-
+    // /index.html HTTP/1.1
+    // 检索字符串 str1 中第一个不在字符串 str2 中出现的字符下标。
     m_version = strpbrk(m_url, " \t");
     if (!m_version)
     {
         return BAD_REQUEST;
     }
-    // GET\0/\0HTTP/1.1
     *m_version++ = '\0';
-    m_version += strspn(m_version, " \t");
-
-    // GET\0/http://192.168.2.1/index.html\0HTTP/1.1
+    if (strcasecmp(m_version, "HTTP/1.1") != 0)
+    {
+        return BAD_REQUEST;
+    }
+    /**
+     * http://43.136.173.233:10000/index.html
+     */
     if (strncasecmp(m_url, "http://", 7) == 0)
     {
         m_url += 7;
-        // 返回首次出现'/'的位置的指针
+        // 在参数 str 所指向的字符串中搜索第一次出现字符 c（一个无符号字符）的位置。
         m_url = strchr(m_url, '/');
     }
-
-    if (strncasecmp(m_url, "https://", 8) == 0)
-    {
-        m_url += 8;
-        // 返回首次出现'/'的位置的指针
-        m_url = strchr(m_url, '/');
-    }
-
     if (!m_url || m_url[0] != '/')
     {
-        // HTTP请求报文有语法错误
         return BAD_REQUEST;
     }
-    // 请求行处理完毕，将主状态机状态转移处理请求头
-    m_check_state = CHECK_STATE_HEADER;
-    // 请求不完整
+    m_check_state = CHECK_STATE_HEADER; // 检查状态变成检查头
     return NO_REQUEST;
 }
 http_conn::HTTP_CODE http_conn::prase_headers(char *text)
