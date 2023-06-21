@@ -19,7 +19,7 @@ void test()
 	steady_clock::time_point begin = steady_clock::now();
 #if 0
 	//不使用连接池
-	for (int i = 0; i < 1000; ++i)
+	for (int i = 0; i < 10000; ++i)
 	{
 		Connection conn;
 		char sql[1024] = { 0 };
@@ -31,7 +31,7 @@ void test()
 #else
 	// 使用连接池
 	ConnectionPool *cp = ConnectionPool::getConnectionPool();
-	for (int i = 0; i < 1000; ++i)
+	for (int i = 0; i < 10000; ++i)
 	{
 		shared_ptr<Connection> sp = cp->getConnection();
 		char sql[1024] = {0};
@@ -44,7 +44,7 @@ void test()
 	nanoseconds res = end - begin;
 	milliseconds millsec = duration_cast<milliseconds>(res); // 纳秒转换为毫秒
 	std::cout << millsec.count() << "ms" << endl;
-	this_thread::sleep_for(chrono::seconds(20));
+	// this_thread::sleep_for(chrono::seconds(20));
 }
 
 void test2() // 多线程测试
@@ -174,7 +174,7 @@ void test2() // 多线程测试
 
 	ConnectionPool *cp = ConnectionPool::getConnectionPool();
 	steady_clock::time_point begin = steady_clock::now();
-	thread t1([&](ConnectionPool *cp)
+	thread t1([&]()
 			  {
 		for (int i = 0; i < 2500; ++i)
 		{
@@ -183,9 +183,8 @@ void test2() // 多线程测试
 				"zhang san", 20, "male");
 			shared_ptr<Connection> sp = cp->getConnection();
 			sp->update(sql);
-		} },
-			  cp);
-	thread t2([&](ConnectionPool *cp)
+		} });
+	thread t2([&]()
 			  {
 		for (int i = 0; i < 2500; ++i)
 		{
@@ -194,9 +193,8 @@ void test2() // 多线程测试
 				"zhang san", 20, "male");
 			shared_ptr<Connection> sp = cp->getConnection();
 			sp->update(sql);
-		} },
-			  cp);
-	thread t3([&](ConnectionPool *cp)
+		} });
+	thread t3([&]()
 			  {
 		for (int i = 0; i < 2500; ++i)
 		{
@@ -205,9 +203,8 @@ void test2() // 多线程测试
 				"zhang san", 20, "male");
 			shared_ptr<Connection> sp = cp->getConnection();
 			sp->update(sql);
-		} },
-			  cp);
-	thread t4([&](ConnectionPool *cp)
+		} });
+	thread t4([&]()
 			  {
 		for (int i = 0; i < 2500; ++i)
 		{
@@ -216,9 +213,8 @@ void test2() // 多线程测试
 				"zhang san", 20, "male");
 			shared_ptr<Connection> sp = cp->getConnection();
 			sp->update(sql);
-		} },
-			  cp);
-	thread t5([&](ConnectionPool *cp)
+		} });
+	thread t5([&]()
 			  {
 		for (int i = 0; i < 2500; ++i)
 		{
@@ -227,9 +223,8 @@ void test2() // 多线程测试
 				"zhang san", 20, "male");
 			shared_ptr<Connection> sp = cp->getConnection();
 			sp->update(sql);
-		} },
-			  cp);
-	thread t6([&](ConnectionPool *cp)
+		} });
+	thread t6([&]()
 			  {
 		for (int i = 0; i < 2500; ++i)
 		{
@@ -238,9 +233,8 @@ void test2() // 多线程测试
 				"zhang san", 20, "male");
 			shared_ptr<Connection> sp = cp->getConnection();
 			sp->update(sql);
-		} },
-			  cp);
-	thread t7([&](ConnectionPool *cp)
+		} });
+	thread t7([&]()
 			  {
 		for (int i = 0; i < 2500; ++i)
 		{
@@ -249,9 +243,8 @@ void test2() // 多线程测试
 				"zhang san", 20, "male");
 			shared_ptr<Connection> sp = cp->getConnection();
 			sp->update(sql);
-		} },
-			  cp);
-	thread t8([&](ConnectionPool *cp)
+		} });
+	thread t8([&]()
 			  {
 		for (int i = 0; i < 2500; ++i)
 		{
@@ -260,8 +253,7 @@ void test2() // 多线程测试
 				"zhang san", 20, "male");
 			shared_ptr<Connection> sp = cp->getConnection();
 			sp->update(sql);
-		} },
-			  cp);
+		} });
 
 	t1.join();
 	t2.join();
