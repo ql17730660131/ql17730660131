@@ -1,0 +1,2 @@
+/opt/rh/devtoolset-9/root/usr/bin/ar qc /root/qianlan/project/ql_rpc/lib/libql_rpc.a CMakeFiles/ql_rpc.dir/logger.cpp.o CMakeFiles/ql_rpc.dir/ql_rpcapplication.cpp.o CMakeFiles/ql_rpc.dir/ql_rpcchannel.cpp.o CMakeFiles/ql_rpc.dir/ql_rpcconfig.cpp.o CMakeFiles/ql_rpc.dir/ql_rpccontroller.cpp.o CMakeFiles/ql_rpc.dir/rpcheader.pb.cc.o CMakeFiles/ql_rpc.dir/rpcprovider.cpp.o CMakeFiles/ql_rpc.dir/zookeeperutil.cpp.o
+/opt/rh/devtoolset-9/root/usr/bin/ranlib /root/qianlan/project/ql_rpc/lib/libql_rpc.a

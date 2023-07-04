@@ -1,0 +1,1 @@
+/opt/rh/devtoolset-9/root/usr/bin/c++ -rdynamic CMakeFiles/user_server.dir/userservice.cpp.o CMakeFiles/user_server.dir/__/user.pb.cc.o -o /root/qianlan/project/ql_rpc/bin/user_server   -L/root/qianlan/project/ql_rpc/lib  -Wl,-rpath,/root/qianlan/project/ql_rpc/lib /root/qianlan/project/ql_rpc/lib/libql_rpc.a -lmuduo_net -lmuduo_base -lzookeeper_mt -lprotobuf -lpthread 
