@@ -1,0 +1,1 @@
+/opt/rh/devtoolset-9/root/usr/bin/c++  -g -std=c++11 -rdynamic CMakeFiles/main.dir/main.cpp.o -o /root/qianlan/project/ql_muduo/bin/main   -L/root/qianlan/project/ql_muduo/lib  -Wl,-rpath,/root/qianlan/project/ql_muduo/lib /root/qianlan/project/ql_muduo/lib/libql_muduo.so -lpthread 

@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "/root/qianlan/project/ql_muduo/lib/libql_muduo.pdb"
+  "/root/qianlan/project/ql_muduo/lib/libql_muduo.so"
+  "CMakeFiles/ql_muduo.dir/Acceptor.cpp.o"
+  "CMakeFiles/ql_muduo.dir/Acceptor.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/Buffer.cpp.o"
+  "CMakeFiles/ql_muduo.dir/Buffer.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/Channel.cpp.o"
+  "CMakeFiles/ql_muduo.dir/Channel.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/CurrentThread.cpp.o"
+  "CMakeFiles/ql_muduo.dir/CurrentThread.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/DefaultPoller.cpp.o"
+  "CMakeFiles/ql_muduo.dir/DefaultPoller.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/EPollPoller.cpp.o"
+  "CMakeFiles/ql_muduo.dir/EPollPoller.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/EventLoop.cpp.o"
+  "CMakeFiles/ql_muduo.dir/EventLoop.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/EventLoopThread.cpp.o"
+  "CMakeFiles/ql_muduo.dir/EventLoopThread.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/EventLoopThreadPool.cpp.o"
+  "CMakeFiles/ql_muduo.dir/EventLoopThreadPool.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/InetAddress.cpp.o"
+  "CMakeFiles/ql_muduo.dir/InetAddress.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/Logger.cpp.o"
+  "CMakeFiles/ql_muduo.dir/Logger.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/Poller.cpp.o"
+  "CMakeFiles/ql_muduo.dir/Poller.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/Socket.cpp.o"
+  "CMakeFiles/ql_muduo.dir/Socket.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/TcpConnection.cpp.o"
+  "CMakeFiles/ql_muduo.dir/TcpConnection.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/TcpServer.cpp.o"
+  "CMakeFiles/ql_muduo.dir/TcpServer.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/Thread.cpp.o"
+  "CMakeFiles/ql_muduo.dir/Thread.cpp.o.d"
+  "CMakeFiles/ql_muduo.dir/Timestamp.cpp.o"
+  "CMakeFiles/ql_muduo.dir/Timestamp.cpp.o.d"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/ql_muduo.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

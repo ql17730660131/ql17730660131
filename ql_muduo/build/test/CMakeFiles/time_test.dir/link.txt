@@ -1,0 +1,1 @@
+/opt/rh/devtoolset-9/root/usr/bin/c++  -g -std=c++11 -rdynamic CMakeFiles/time_test.dir/Timestamp_test.cpp.o CMakeFiles/time_test.dir/__/src/Timestamp.cpp.o -o /root/qianlan/project/ql_muduo/bin/time_test   -L/root/qianlan/project/ql_muduo/lib 
