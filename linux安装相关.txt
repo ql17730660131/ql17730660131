@@ -1,0 +1,203 @@
+虚拟机安装注意
+打开网络连接
+
+/etc/sysconfig/network-scripts/ifcfg-ens33
+有可能变成/etc/sysconfig/network-scripts/ifcfg-ens32
+具体情况而定
+
+
+ 配置示例 链接
+TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=static
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=ens33
+UUID=4f28ed1b-9cc1-4a2f-8c2a-b09435fff313
+DEVICE=ens33
+ONBOOT=yes
+IPADDR=192.168.10.43
+DNS1=144.144.144.144
+DNS2=8.8.8.8
+GATEWAY=192.168.10.2
+在网卡中查看DNS，如果没有8.8.8.8加一个DNS上去
+退出重启网络
+[root@localhost ~]# systemctl restart network
+
+centos查看内核版本
+1	cat /proc/version
+2	uname -a
+3	cat /etc/redhat-release
+
+CentOS 关闭防火墙
+查看防火墙状态
+firewall-cmd --state
+停止firewall
+systemctl stop firewalld.service
+禁止firewall开机启动
+systemctl disable firewalld.service
+CentOS各版本更换国内源
+csdn链接
+更新yum源
+链接
+阿里云源（方法2已经使用过）
+方法1
+1、备份(针对所有CentOS可用，备份文件在当前路径下)
+mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+CentOS 7
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+或者
+curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+3、之后运行yum makecache生成缓存
+yum makecache
+方法2
+这两步可选项 具体看链接
+//sudo yum clean all
+//sudo yum makecache
+抄录一下 CentOS 7
+
+wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
+1
+或者
+curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.re
+
+之后运行yum makecache生成缓存
+yum makecache
+
+centos更换国内源——腾讯云源
+
+源清单在这里
+
+抄录Centos7 部分
+
+备份系统旧配置文件
+
+ mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+1
+CentOS 7
+
+ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/ce
+
+
+之后运行yum makecache生成缓存
+yum makecache
+
+查看yum源信息
+cd /etc/yum.repos.d
+cat CentOS-Base.repo
+或 vim CentOS-Base.repo
+信息
+name 是yum源名称，可以为任意字符串
+baseur 指定的是yum源的url地址
+可参考链接
+
+yum源更新（yum upgrade 可以使用）
+在CentOS 7上安装wget命令非常简单，您只需按照以下步骤进行操作：
+1. 打开终端窗口，以root用户身份登录系统。
+2. 运行以下命令更新系统的软件包列表：yum update
+3. 运行以下命令以安装wget软件包：yum install wget
+4. 等待安装完成后，您就可以使用wget命令下载文件了。例如，运行以下命令将从网站下载文件：wget http://example.com/file.tar.gz
+
+安装完成后，您可以输入以下命令来验证wget已成功安装：wget --version
+
+1. 等待安装完成后，输入以下命令来验证wget是否已经成功安装：wget --version如果您看到wget的版本信息，则说明已经成功安装了wget命令。在CentOS 7上安装wget命令非常简单，只需按照以下步骤进行操作：
+2. 打开终端或SSH客户端，以root用户登录系统。
+3. 运行以下命令以更新yum包管理器：yum -y update
+4. 运行以下命令以安装wget：yum -y install wget
+
+yum upgrade与yum update
+其实我更推荐用yum upgrade取代yum update，yum update只更新系统中已有的软件包，不会更新内核软件包(kernel-这个包)，yum upgrade是更彻底的update，会分析包的废弃关系，可以跨小版本升级（比如从centos 7.1升级到centos 7.4），除了做了yum update完全相同的事之外，还会更新kernel-的包，也会卸载掉已经废弃的包。
+新部署系统需要yum update/upgrade是因为yum不会给你解决依赖冲突(但是apt会)。
+举个例子，你的系统中已经安装了kernel-2.6.32.500，但是你要安装的某个软件包依赖于kernel-2.6.32.600，此时yum会报错退出，告诉你依赖不满足，并不会升级kernel包(只是举个例子而已，实际上几乎没有软件包直接依赖于kernel包)，所以你只能yum update/upgrade一次，把系统中所有的软件包全部更新，这样满足新部署的软件包的依赖。
+在debian/ubuntu的系统中，apt会对这种情况自动处理，会自动升级依赖的软件包。
+换句话来说，对于新部署的服务器，也是推荐upgrade全部的软件包，已获得最新的安全补丁。即使对于已经上线的服务器，也是推荐定期打安全漏洞补丁，减少漏洞带来的侵害。
+gcc
+gcc安装
+直接安装
+使用yum安装
+yum -y install gcc gcc-c++ kernel-devel //安装gcc、c++编译器以及内核文件
+再安装yum -y install centos-release-scl 
+用下面devtoolset 升级gcc版本（推荐）
+链接1
+链接2
+
+源码安装（不推荐）
+以安装gcc为例，登陆https://gcc.gnu.org/，下载相应版本
+
+csdn链接
+
+gcc升级（将数字改为要切换的版本即可）
+升级到gcc 9.3
+yum -y install centos-release-scl 
+yum -y install devtoolset-9-gcc devtoolset-9-gcc-c++ devtoolset-9-binutils 
+scl enable devtoolset-9 bash
+
+需要注意的是scl命令启用只是临时的，退出shell或重启就会恢复原系统gcc版本。
+如果要长期使用gcc 9.3的话：
+
+echo "source /opt/rh/devtoolset-9/enable" >>/etc/profile
+gcc升级链接
+
+centos7 devtoolset 升级gcc版本（推荐）
+安装 devtoolset
+命令中的9 代表gcc版本
+//安装gcc 9 的版本
+yum -y install devtoolset-9-gcc*
+//安装gcc 7 的版本
+yum -y install devtoolset-7-gcc*
+激活
+//激活gcc 9
+scl enable devtoolset-9 bash
+//激活gcc 7
+scl enable devtoolset-7 bash
+注意： scl命令启用只是临时的，退出shell或重启就会恢复原系统gcc版本，如果要长期使用的话执行：echo "source /opt/rh/devtoolset-7/enable" >>/etc/profile 。gcc版本9 执行：echo "source /opt/rh/devtoolset-9/enable" >>/etc/profile
+
+scl -l 命令查看通过 scl 安装了哪些软件
+centos7 devtoolset 回退至初始gcc版本
+注释  /etc/profile  中
+source /opt/rh/devtoolset-*
+这一行
+
+centos 7 更新gcc （devtoolset-10）
+步骤
+yum install centos-release-scl
+
+
+1
+yum -y install devtoolset-10-gcc devtoolset-10-gcc-c++ devtoolset-10-binutils
+
+
+1
+scl enable devtoolset-10 bash
+持久化使用10：
+source /opt/rh/devtoolset-10/enable
+
+查看所有可用的gcc安装包
+yum list devtoolset-*-gcc
+可用版本链接
+
+gcc升级11.2
+
+# 腾讯软件源 https://mirrors.cloud.tencent.com/
+# 腾讯软件源 https://mirrors.cloud.tencent.com/gnu/gcc/gcc-11.2.0/gcc-11.2.0.tar.gz
+
+
+版本管理链接
+gcc版本支持情况
+
+https://blog.csdn.net/qq_39974998/article/details/130396600
+https://blog.csdn.net/adolph58/article/details/88719943
+
+docker安装
+链接
+链接
+
+
+
+
